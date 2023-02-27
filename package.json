@@ -1,26 +1,34 @@
 {
   "name": "use-leader",
-  "version": "0.0.0",
-  "description": "React hook for electing a leader among browser tabs",
+  "version": "0.0.0-alpha",
+  "description": "React hook for cross-tab leader election",
   "main": "esm/index.js",
+  "module": "esm/index.js",
+  "types": "esm/index.d.ts",
+  "type": "module",
   "dependencies": {
     "nanoevents": "^7.0.1",
     "nanoid": "^4.0.0"
   },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
-    "react",
     "hook",
-    "leader",
-    "election",
     "cross-tab"
   ],
   "author": "Alexey Taktarov <molefrog@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^4.9.4"
-  }
+  },
+  "files": [
+    "esm",
+    "src"
+  ]
 }
