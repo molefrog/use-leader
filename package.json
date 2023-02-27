@@ -1,0 +1,26 @@
+{
+  "name": "use-leader",
+  "version": "0.0.0",
+  "description": "React hook for electing a leader among browser tabs",
+  "main": "esm/index.js",
+  "dependencies": {
+    "nanoevents": "^7.0.1",
+    "nanoid": "^4.0.0"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "react",
+    "react",
+    "hook",
+    "leader",
+    "election",
+    "cross-tab"
+  ],
+  "author": "Alexey Taktarov <molefrog@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
