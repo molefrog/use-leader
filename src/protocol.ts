@@ -28,10 +28,47 @@ export type Leader = ID | typeof Election;
 
 // Communication Channel
 export interface Channel {
-  emit: (msg: Omit<Message, "ver">) => void;
+  emit: (msg: Omit<Omit<Message, "ver">, "snd">) => void;
   listen: (fn: (msg: Message) => void) => () => void;
+  destroy: () => void;
 
   // Latency estimation of the channel (i.e. all messages should arrive within `T` ms)
   // It affects election timeouts, so slower channels require more time to settle on the leader
-  T: number;
+  readonly T: number;
 }
+
+/**
+ * Simple multicast channel that works over `BroadcastChannel`
+ * @param id - participant id, so that others can send messages to this node
+ * @param version - for testing purposes
+ * @returns a newly created Channel
+ */
+export const multicast = (id: ID, version = VERSION): Channel => {
+  const bcast = new BroadcastChannel(`use-leader_${version}`);
+
+  return {
+    emit(params) {
+      const message: Message = Object.assign({ ver: version, snd: id }, params);
+      bcast.postMessage(message);
+    },
+
+    listen(fn) {
+      const handler = ({ data: msg }: MessageEvent<Message>) => {
+        if (typeof msg !== "object") return;
+        // this message is for someone else, ignoring
+        if (msg.rcv && msg.rcv !== id) return;
+
+        fn(msg);
+      };
+
+      bcast.addEventListener("message", handler);
+      return () => bcast.removeEventListener("message", handler);
+    },
+
+    destroy() {
+      bcast.close();
+    },
+
+    T: 50,
+  };
+};
