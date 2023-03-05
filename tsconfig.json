@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "declaration": true,
     "outDir": "./esm"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts"]
 }

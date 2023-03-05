@@ -1,11 +1,11 @@
-import { Message, Event, Leader, ID, Election, Channel } from "./protocol";
+import { Channel, Election, Event, ID, Leader, Message } from "./protocol.js";
 
 export interface LeaderSignal {
   value: Leader;
 }
 
 /**
- * "Bully" leader election algorithm implementation
+ * "Bully" leader election algorithm
  *
  * @example
  * ```ts
@@ -17,7 +17,7 @@ export interface LeaderSignal {
  * @see {@link https://en.wikipedia.org/wiki/Bully_algorithm}
  */
 export class Bully {
-  readonly token: ID = String(Math.floor(Math.random() * 1000));
+  readonly id: ID = String(Math.floor(Math.random() * 1000));
   leader: LeaderSignal = { value: Election };
 
   private readonly chan: Channel;
@@ -25,15 +25,15 @@ export class Bully {
 
   constructor(channel: Channel, signal?: LeaderSignal) {
     this.chan = channel;
-    this.leader ||= signal;
+    // this.leader ||= signal;
 
     this.live();
   }
 
   isElecting = () => this.leader.value === Election;
-  isLeader = () => this.leader.value === this.token;
+  isLeader = () => this.leader.value === this.id;
 
-  shout = (evt: Event, to?: ID) => this.chan.emit({ evt, rcv: to, snd: this.token });
+  shout = (evt: Event, to?: ID) => this.chan.emit({ evt, rcv: to });
 
   elect() {
     this.stop();
@@ -47,14 +47,14 @@ export class Bully {
 
   handleMsg = ({ evt, snd, rcv }: Message) => {
     // this message is for someone else, ignoring
-    if (rcv && rcv !== this.token) return;
+    if (rcv && rcv !== this.id) return;
 
     if (evt === Event.Leader) {
       this.stop();
       this.leader.value = snd; // we've elected the leader
     }
 
-    if (evt === Event.Election && snd < this.token) {
+    if (evt === Event.Election && snd < this.id) {
       this.shout(Event.Disagree, snd); // no, you're not!
       if (!this.isElecting()) this.elect(); // i want to be a leader too
     }
@@ -71,7 +71,7 @@ export class Bully {
   };
 
   lead() {
-    this.leader.value = this.token;
+    this.leader.value = this.id;
     this.shout(Event.Leader);
   }
 

@@ -7,16 +7,12 @@
   "types": "esm/index.d.ts",
   "type": "module",
   "dependencies": {
-    "nanoevents": "^7.0.1",
     "nanoid": "^4.0.0"
   },
   "peerDependencies": {
     "react": "^18.0.0"
   },
-  "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build"
-  },
+  "scripts": {},
   "keywords": [
     "react",
     "hook",
@@ -24,9 +20,6 @@
   ],
   "author": "Alexey Taktarov <molefrog@gmail.com>",
   "license": "MIT",
-  "devDependencies": {
-    "typescript": "^4.9.4"
-  },
   "files": [
     "esm",
     "src"

@@ -1,7 +1,7 @@
 import { assert, assertExists } from "std/testing/asserts.ts";
 import { deadline, deferred, delay } from "std/async/mod.ts";
 
-import { Event, multicast } from "./protocol.ts";
+import { Event, multicast } from "./protocol.js";
 
 const WAIT_FOR = 30;
 

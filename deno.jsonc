@@ -1,8 +1,15 @@
 {
   "imports": {
-    "std/": "https://deno.land/std@0.174.0/"
+    "std/": "https://deno.land/std@0.174.0/",
+
+    // importing modules with .ts extension works in Deno, but
+    // isn't supported by TypeScript
+    // https://github.com/microsoft/TypeScript/issues/27481
+    "./src/bully.js": "./src/bully.ts",
+    "./src/protocol.js": "./src/protocol.ts"
   },
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run --watch main.ts",
+    "compile": "deno run --allow-env --allow-write --allow-read npm:typescript/tsc"
   }
 }
