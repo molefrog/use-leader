@@ -37,18 +37,29 @@ export interface Channel {
   readonly T: number;
 }
 
+export type CreateChannel = (
+  id: ID,
+  options?: { version: string },
+) => Channel;
+
 /**
  * Simple multicast channel that works over `BroadcastChannel`
  * @param id - participant id, so that others can send messages to this node
  * @param version - for testing purposes
  * @returns a newly created Channel
  */
-export const multicast = (id: ID, version = VERSION): Channel => {
-  const bcast = new BroadcastChannel(`use-leader_${version}`);
+export const multicast: CreateChannel = (
+  id: ID,
+  options: { version: string } = { version: VERSION },
+) => {
+  const bcast = new BroadcastChannel(`use-leader_${options.version}`);
 
   return {
     emit(params) {
-      const message: Message = Object.assign({ ver: version, snd: id }, params);
+      const message: Message = Object.assign(
+        { ver: options.version, snd: id },
+        params,
+      );
       bcast.postMessage(message);
     },
 

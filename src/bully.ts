@@ -1,7 +1,20 @@
-import { Channel, Election, Event, ID, Leader, Message } from "./protocol.js";
+import {
+  Channel,
+  Election,
+  Event,
+  ID,
+  Leader,
+  Message,
+  multicast,
+} from "./protocol.js";
 
-export interface LeaderSignal {
+export interface LeaderRef {
   value: Leader;
+}
+
+export interface CtorOptions {
+  leaderRef: LeaderRef;
+  channel: Channel;
 }
 
 /**
@@ -16,18 +29,17 @@ export interface LeaderSignal {
  *
  * @see {@link https://en.wikipedia.org/wiki/Bully_algorithm}
  */
-export class Bully {
-  readonly id: ID = String(Math.floor(Math.random() * 1000));
-  leader: LeaderSignal = { value: Election };
+export default class Bully {
+  readonly id: ID;
+  readonly leader: LeaderRef;
 
   private readonly chan: Channel;
   private unsub?: ReturnType<Channel["listen"]>;
 
-  constructor(channel: Channel, signal?: LeaderSignal) {
-    this.chan = channel;
-    // this.leader ||= signal;
-
-    this.live();
+  constructor(id: ID, { leaderRef, channel }: Partial<CtorOptions> = {}) {
+    this.id = id;
+    this.leader = leaderRef || { value: Election };
+    this.chan = channel || multicast(this.id);
   }
 
   isElecting = () => this.leader.value === Election;
@@ -91,6 +103,10 @@ export class Bully {
     this.stop();
     this.leader.value = Election;
     this.shout(Event.Dead);
+  }
+
+  destroy() {
+    this.chan.destroy?.();
   }
 
   /*

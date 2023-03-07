@@ -44,8 +44,8 @@ Deno.test("ignore messages sent to other participants", async () => {
 });
 
 Deno.test("ignore messages with version mismatch", async () => {
-  const ch1 = multicast("foo", "v1.0.0");
-  const ch2 = multicast("bar", "v2.1.0");
+  const ch1 = multicast("foo", { version: "v1.0.0" });
+  const ch2 = multicast("bar", { version: "v2.1.0" });
 
   ch2.listen(() => assert(false, "second channel should not get the msg!"));
   ch1.emit({ evt: Event.Dead, rcv: undefined });
