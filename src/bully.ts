@@ -1,3 +1,5 @@
+import { createNanoEvents } from "nanoevents";
+
 import {
   Channel,
   Election,
@@ -8,13 +10,13 @@ import {
   multicast,
 } from "./protocol.js";
 
-export interface LeaderRef {
-  value: Leader;
+export interface CtorOptions {
+  channel: Channel;
+  leaderInit: Leader;
 }
 
-export interface CtorOptions {
-  leaderRef: LeaderRef;
-  channel: Channel;
+export interface Events {
+  elected: (newLeader: Leader) => void;
 }
 
 /**
@@ -31,26 +33,36 @@ export interface CtorOptions {
  */
 export default class Bully {
   readonly id: ID;
-  readonly leader: LeaderRef;
 
   private readonly chan: Channel;
   private unsub?: ReturnType<Channel["listen"]>;
 
-  constructor(id: ID, { leaderRef, channel }: Partial<CtorOptions> = {}) {
+  readonly events = createNanoEvents<Events>();
+
+  constructor(id: ID, { leaderInit, channel }: Partial<CtorOptions> = {}) {
     this.id = id;
-    this.leader = leaderRef || { value: Election };
     this.chan = channel || multicast(this.id);
+    this.leader = leaderInit || Election;
   }
 
-  isElecting = () => this.leader.value === Election;
-  isLeader = () => this.leader.value === this.id;
+  private leader: Leader;
+
+  private assignLeader(val: Leader) {
+    if (this.leader !== val) {
+      this.events.emit("elected", val);
+    }
+    this.leader = val;
+  }
+
+  isElecting = () => this.leader === Election;
+  isLeader = () => this.leader === this.id;
 
   shout = (evt: Event, to?: ID) => this.chan.emit({ evt, rcv: to });
 
   elect() {
     this.stop();
 
-    this.leader.value = Election;
+    this.assignLeader(Election);
     this.shout(Event.Election); // i want to be a leader, any objections?
 
     // no one objects -> declare mysefl as the leader
@@ -63,7 +75,7 @@ export default class Bully {
 
     if (evt === Event.Leader) {
       this.stop();
-      this.leader.value = snd; // we've elected the leader
+      this.assignLeader(snd); // we've elected the leader
     }
 
     if (evt === Event.Election && snd < this.id) {
@@ -76,14 +88,14 @@ export default class Bully {
       this._electTm = setTimeout(() => this.elect(), 3 * this.chan.T);
     }
 
-    if (evt === Event.Dead && snd === this.leader.value) {
+    if (evt === Event.Dead && snd === this.leader) {
       // the king is dead... re-elect!
       this.elect();
     }
   };
 
   lead() {
-    this.leader.value = this.id;
+    this.assignLeader(this.id);
     this.shout(Event.Leader);
   }
 
@@ -101,11 +113,12 @@ export default class Bully {
   die() {
     this.unsub?.();
     this.stop();
-    this.leader.value = Election;
+    this.assignLeader(Election);
     this.shout(Event.Dead);
   }
 
   destroy() {
+    this.die();
     this.chan.destroy?.();
   }
 
