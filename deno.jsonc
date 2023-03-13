@@ -2,6 +2,8 @@
   "imports": {
     "std/": "https://deno.land/std@0.174.0/",
     "nanoevents": "https://esm.sh/nanoevents@7.0.1",
+    "nanoid": "https://esm.sh/nanoid@4.0.1",
+    "react": "https://esm.sh/react@18",
 
     // importing modules with .ts extension works in Deno, but
     // isn't supported by TypeScript

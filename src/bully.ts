@@ -42,16 +42,18 @@ export default class Bully {
     this.leader = leaderInit || Election;
   }
 
-  private leader: Leader;
+  leader: Leader;
 
   isElecting = () => this.leader === Election;
   isLeader = () => this.leader === this.id;
 
   private assignLeader(val: Leader) {
-    if (this.leader !== val) {
+    const prev = this.leader;
+    this.leader = val;
+
+    if (prev !== val) {
       this.events.emit("elected", val);
     }
-    this.leader = val;
   }
 
   /*
