@@ -2,9 +2,9 @@
   "name": "use-leader",
   "version": "0.0.0-alpha",
   "description": "React hook for cross-tab leader election",
-  "main": "esm/index.js",
-  "module": "esm/index.js",
-  "types": "esm/index.d.ts",
+  "main": "esm/use-leader.js",
+  "module": "esm/use-leader.js",
+  "types": "esm/use-leader.d.ts",
   "type": "module",
   "dependencies": {
     "nanoid": "^4.0.0"
@@ -13,11 +13,6 @@
     "react": "^18.0.0"
   },
   "scripts": {},
-  "keywords": [
-    "react",
-    "hook",
-    "cross-tab"
-  ],
   "author": "Alexey Taktarov <molefrog@gmail.com>",
   "license": "MIT",
   "files": [

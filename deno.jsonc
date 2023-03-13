@@ -9,7 +9,7 @@
     "./src/protocol.js": "./src/protocol.ts"
   },
   "tasks": {
-    "dev": "deno run --watch main.ts",
+    "dev": "deno run --allow-all https://deno.land/x/packup@v0.2.2/cli.ts serve -i web/import-map.json web/index.html",
     "compile": "deno run --allow-env --allow-write --allow-read npm:typescript/tsc"
   }
 }
