@@ -34,9 +34,6 @@ export interface Events {
 export default class Bully {
   readonly id: ID;
 
-  private readonly chan: Channel;
-  private unsub?: ReturnType<Channel["listen"]>;
-
   readonly events = createNanoEvents<Events>();
 
   constructor(id: ID, { leaderInit, channel }: Partial<CtorOptions> = {}) {
@@ -47,6 +44,9 @@ export default class Bully {
 
   private leader: Leader;
 
+  isElecting = () => this.leader === Election;
+  isLeader = () => this.leader === this.id;
+
   private assignLeader(val: Leader) {
     if (this.leader !== val) {
       this.events.emit("elected", val);
@@ -54,22 +54,17 @@ export default class Bully {
     this.leader = val;
   }
 
-  isElecting = () => this.leader === Election;
-  isLeader = () => this.leader === this.id;
+  /*
+   * Channel: sending and listening for messages
+   */
+  private readonly chan: Channel;
+  private unsub?: ReturnType<Channel["listen"]>;
 
-  shout = (evt: Event, to?: ID) => this.chan.emit({ evt, rcv: to });
-
-  elect() {
-    this.stop();
-
-    this.assignLeader(Election);
-    this.shout(Event.Election); // i want to be a leader, any objections?
-
-    // no one objects -> declare mysefl as the leader
-    this._leadTm = setTimeout(() => this.lead(), 2 * this.chan.T);
+  private shout(evt: Event, to?: ID) {
+    this.chan.emit({ evt, rcv: to });
   }
 
-  handleMsg = ({ evt, snd, rcv }: Message) => {
+  private handleMsg = ({ evt, snd, rcv }: Message) => {
     // this message is for someone else, ignoring
     if (rcv && rcv !== this.id) return;
 
@@ -93,6 +88,16 @@ export default class Bully {
       this.elect();
     }
   };
+
+  elect() {
+    this.stop();
+
+    this.assignLeader(Election);
+    this.shout(Event.Election); // i want to be a leader, any objections?
+
+    // no one objects -> declare mysefl as the leader
+    this._leadTm = setTimeout(() => this.lead(), 2 * this.chan.T);
+  }
 
   lead() {
     this.assignLeader(this.id);
@@ -128,7 +133,7 @@ export default class Bully {
   private _leadTm?: Timer;
   private _electTm?: Timer;
 
-  stop() {
+  private stop() {
     // stop whatever you're doing
     clearTimeout(this._electTm);
     clearTimeout(this._leadTm);
