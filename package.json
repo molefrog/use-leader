@@ -7,7 +7,8 @@
   "types": "esm/use-leader.d.ts",
   "type": "module",
   "dependencies": {
-    "nanoid": "^4.0.0"
+    "nanoevents": "^7.0.1",
+    "nanoid": "^4.0.1"
   },
   "peerDependencies": {
     "react": "^18.0.0"

@@ -9,8 +9,8 @@ import {
 
 import { nanoid } from "nanoid";
 
-import Bully from "./bully.ts";
-import { ID, Leader } from "./protocol.ts";
+import Bully from "./bully.js";
+import { ID, Leader } from "./protocol.js";
 
 interface RefCounter {
   instance: Bully;
