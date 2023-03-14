@@ -6,10 +6,11 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+
 import { nanoid } from "nanoid";
 
 import Bully from "./bully.ts";
-import { ID } from "./protocol.ts";
+import { ID, Leader } from "./protocol.ts";
 
 interface RefCounter {
   instance: Bully;
@@ -26,7 +27,13 @@ interface Options {
   id?: ID;
 }
 
-export const useLeaderInstance = (options?: Options): Bully => {
+/**
+ * @returns instance of the election algorithm
+ *
+ * Re-uses an instance that has already been created by another component, and
+ * shuts down this node when all components leave the tree.
+ */
+export const useElection = (options?: Options): Bully => {
   const manager = useInstanceManager();
 
   const hookRef = useRef(Symbol());
@@ -68,17 +75,27 @@ export const useLeaderInstance = (options?: Options): Bully => {
 };
 
 /**
- * @param options additional options to customize leader detection
- * @returns true if current node is a leader
+ * @param options additional options to customize the election behaviour
+ * @returns ID of the current leader or null when election is in process
  */
-const useLeader = (options?: Options): boolean => {
-  const instance = useLeaderInstance(options);
+export const useLeader = (options?: Options) => {
+  const instance = useElection(options);
 
-  return useSyncExternalStore(
+  const leaderId = useSyncExternalStore<Leader>(
     (fn) => instance.events.on("elected", fn),
-    () => instance.isLeader(),
-    () => true, // in SSR mode, always assume we're leading
+    () => instance.leader,
+    // leader is this node in SSR
+    () => instance.id,
   );
+
+  const isLeader = leaderId === instance.id;
+
+  return { isLeader, id: instance.id, leaderId, ref: instance };
 };
+/**
+ * Shortcut hook version that checks if current tab is a leading tab
+ * @returns true if current tab is a leader
+ */
+export const useIsLeader = (options?: Options) => useLeader(options).isLeader;
 
 export default useLeader;
