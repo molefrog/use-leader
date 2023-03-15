@@ -1,12 +1,12 @@
 @font-face {
   font-family: "FSEX302";
   src: url("./FSEX302-alt.woff2") format("woff2");
-  font-display: swap;
+  font-display: block;
   font-feature-settings: "liga" 1;
 }
 
 :root {
-  font-family: "FSEX302", "Courier New", Courier, monospace;
+  font-family: "FSEX302", monospace;
   -webkit-font-smoothing: none;
   text-shadow: 0px 2px 0px black, 0px 1px 0px black, 1px 0px 0px black;
   font-size: 16px;
