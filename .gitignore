@@ -6,3 +6,4 @@ package-lock.json
 deno.lock
 .vscode
 .DS_Store
+out/
