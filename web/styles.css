@@ -1,0 +1,76 @@
+@font-face {
+  font-family: "FSEX302";
+  src: url("./FSEX302-alt.woff2") format("woff2");
+  font-display: swap;
+  font-feature-settings: "liga" 1;
+}
+
+:root {
+  font-family: "FSEX302", "Courier New", Courier, monospace;
+  -webkit-font-smoothing: none;
+  text-shadow: 0px 2px 0px black, 0px 1px 0px black, 1px 0px 0px black;
+  font-size: 16px;
+  color: #fefefe;
+  background: black;
+}
+
+main {
+  width: 44ch;
+  box-sizing: border-box;
+  margin-top: 8ch;
+  padding: 2ch 2ch;
+  background: #0161df;
+}
+
+html,
+body,
+h1,
+h2,
+h3,
+pre {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+h1,
+h2,
+code,
+pre {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+h1 {
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(to bottom, #fffa10 50%, #ffbf18 50%, #ffbf18 70%, #dc9b00 70%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  text-shadow: none;
+  color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+mark {
+  color: black;
+  text-shadow: none;
+  background: #6cf02e;
+}
+
+a:hover {
+  text-decoration: underline;
+}
