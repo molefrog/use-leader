@@ -66,10 +66,7 @@ export default class Bully {
     this.chan.emit({ evt, rcv: to });
   }
 
-  private handleMsg = ({ evt, snd, rcv }: Message) => {
-    // this message is for someone else, ignoring
-    if (rcv && rcv !== this.id) return;
-
+  private handleMsg = ({ evt, snd }: Message) => {
     if (evt === Event.Leader) {
       this.stop();
       this.assignLeader(snd); // we've elected the leader
@@ -98,6 +95,7 @@ export default class Bully {
     this.shout(Event.Election); // i want to be a leader, any objections?
 
     // no one objects -> declare mysefl as the leader
+
     this._leadTm = setTimeout(() => this.lead(), 2 * this.chan.T);
   }
 
@@ -109,12 +107,7 @@ export default class Bully {
   live() {
     this.unsub?.();
     this.unsub = this.chan.listen(this.handleMsg);
-
-    if (this.isElecting()) {
-      this.lead();
-    } else {
-      this.elect();
-    }
+    this.elect();
   }
 
   die() {
