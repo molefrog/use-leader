@@ -15,11 +15,40 @@
 }
 
 main {
+  --main-bg: #0161df;
+  --frame-w: 6px;
+
+  display: block;
   width: 44ch;
   box-sizing: border-box;
-  margin-top: 8ch;
   padding: 2ch 2ch;
-  background: #0161df;
+  background: var(--main-bg);
+  position: relative;
+  margin-bottom: 4ch;
+}
+
+main:first-of-type {
+  margin-top: 8ch;
+}
+
+/** Frame */
+main:before,
+main:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  left: var(--frame-w);
+  right: var(--frame-w);
+  height: var(--frame-w);
+  background: var(--main-bg);
+}
+
+main:before {
+  top: calc(-1 * var(--frame-w));
+}
+
+main:after {
+  bottom: calc(-1 * var(--frame-w));
 }
 
 html,
@@ -34,7 +63,8 @@ pre {
 
 body {
   display: flex;
-  justify-content: center;
+  flex-flow: column nowrap;
+  align-items: center;
 }
 
 h1,
@@ -63,6 +93,11 @@ h1 {
 a {
   color: inherit;
   text-decoration: inherit;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 mark {
@@ -71,6 +106,17 @@ mark {
   background: #6cf02e;
 }
 
-a:hover {
-  text-decoration: underline;
+s {
+  color: black;
+  text-shadow: none;
+  background: red;
+}
+
+footer {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+nav {
+  flex-grow: 1;
 }
