@@ -80,6 +80,6 @@ export const multicast: CreateChannel = (
       bcast.close();
     },
 
-    T: 50,
+    T: 100,
   };
 };

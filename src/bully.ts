@@ -95,11 +95,12 @@ export default class Bully {
     this.shout(Event.Election); // i want to be a leader, any objections?
 
     // no one objects -> declare mysefl as the leader
-
-    this._leadTm = setTimeout(() => this.lead(), 2 * this.chan.T);
+    this._leadTm = setTimeout(() => this.lead(), this.chan.T);
   }
 
   lead() {
+    this.stop();
+
     this.assignLeader(this.id);
     this.shout(Event.Leader);
   }
