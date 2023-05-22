@@ -46,7 +46,7 @@ export const useElection = (options?: Options): Bully => {
       manager[lookup].refs.add(hookRef.current);
     } else {
       // set up and run a new instance
-      const instance = new Bully(options?.id || nanoid());
+      const instance = new Bully(options?.id || nanoid(8));
       manager[lookup] = { instance, refs: new Set([hookRef.current]) };
 
       instance.live();
@@ -97,5 +97,3 @@ export const useLeader = (options?: Options) => {
  * @returns true if current tab is a leader
  */
 export const useIsLeader = (options?: Options) => useLeader(options).isLeader;
-
-export default useLeader;

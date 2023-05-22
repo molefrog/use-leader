@@ -4,7 +4,7 @@ import { render, h, Fragment } from "preact";
 import { useState } from "preact/hooks";
 import { nanoid } from "nanoid";
 
-import useLeader, { useIsLeader } from "../src/use-leader.ts";
+import { useLeader } from "../src/use-leader.ts";
 
 const IAmLeader = ({ leader = null }) => {
   const Label = () => {
@@ -23,17 +23,18 @@ const IAmLeader = ({ leader = null }) => {
 };
 
 const LeaderDetection = () => {
-  const { id, leaderId, isLeader } = useLeader();
-  const currentLeader = leaderId || "Election";
+  const [id] = useState(() => nanoid(6));
+  const { id: nodeId, leaderId, isLeader } = useLeader({ id });
+  const currentLeader = leaderId || "Electn";
 
   return (
     <>
-      <IAmLeader leader={true} />
+      <IAmLeader leader={isLeader} />
 
       <pre>
         {"\n"}
-        {`Node ID............${id}\n`}
-        {`Leader ID..........${currentLeader}\n`}
+        {`  Node ID.......................${nodeId}\n`}
+        {`  Leader ID.....................${currentLeader}\n`}
       </pre>
     </>
   );
