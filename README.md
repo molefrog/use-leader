@@ -5,7 +5,20 @@
  */
 
 // simple usage
+import { useLeader } from "use-leader"
 const { isLeader } = useLeader() // true/false
+
+// alias, provides boolean value only
+import { useIsLeader } from "use-leader"
+const isLeader = useIsLeader() // true/false
+
+// additional state 
+const { 
+  id,       // id of the current node (tab)
+  leaderId, // id of the elected leader
+  ref       // reference to election instance, can be used for imperative control
+            // over the state of the node e.g. `ref.lead()` - force become a leader
+} = useLeader()
 
 // each node has a unique identifier, when the leader is elected, every node holds 
 // the leading id. these ids are randomly generated... so why would you want 
