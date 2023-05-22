@@ -5,6 +5,7 @@ import { useState } from "preact/hooks";
 import { nanoid } from "nanoid";
 
 import { useLeader } from "../src/use-leader.ts";
+import { multicast, ALL } from "../src/protocol.ts";
 
 const IAmLeader = ({ leader = null }) => {
   const Label = () => {
@@ -100,10 +101,10 @@ const App = () => {
 };
 
 /** Logger */
-const bcast = new BroadcastChannel(`use-leader_0`);
-bcast.onmessage = (e) => {
-  const { snd, evt, rcv } = e.data;
 
+const channel = multicast(ALL);
+
+channel.listen(({ snd, evt, rcv }) => {
   const translate = {
     "🙋‍": "elect",
     "🙅‍": "disag",
@@ -111,12 +112,9 @@ bcast.onmessage = (e) => {
     "💀": "xdead",
   };
 
-  if (rcv) {
-    console.log(`${evt} ${snd} -> ${rcv} :: ${translate[evt]} `);
-  } else {
-    console.log(`${evt} ${snd} :: ${translate[evt]}`);
-  }
-};
+  const transfer = [snd, rcv].filter(Boolean).join(" -> ");
+  console.log(`${evt} ${transfer} :: ${translate[evt]} `);
+});
 
 /** mono screen utils */
 const WIDTH = 40;

@@ -4,6 +4,8 @@
 
 export const VERSION = "0";
 
+export const ALL: unique symbol = Symbol.for("*");
+
 // node with higher ID wins the election (must be unique and comparable)
 export type ID = string;
 
@@ -38,7 +40,7 @@ export interface Channel {
 }
 
 export type CreateChannel = (
-  id: ID,
+  id: ID | typeof ALL,
   options?: { version: string },
 ) => Channel;
 
@@ -49,17 +51,19 @@ export type CreateChannel = (
  * @returns a newly created Channel
  */
 export const multicast: CreateChannel = (
-  id: ID,
+  id,
   options: { version: string } = { version: VERSION },
 ) => {
   const bcast = new BroadcastChannel(`use-leader_${options.version}`);
+  const wiretap = id === ALL; // can listen to everyone's messages
 
   return {
     emit(params) {
       const message: Message = Object.assign(
-        { ver: options.version, snd: id },
+        { ver: options.version, snd: String(id) },
         params,
       );
+
       bcast.postMessage(message);
     },
 
@@ -67,7 +71,7 @@ export const multicast: CreateChannel = (
       const handler = ({ data: msg }: MessageEvent<Message>) => {
         if (typeof msg !== "object") return;
         // this message is for someone else, ignoring
-        if (msg.rcv && msg.rcv !== id) return;
+        if (!wiretap && msg.rcv && msg.rcv !== id) return;
 
         fn(msg);
       };
