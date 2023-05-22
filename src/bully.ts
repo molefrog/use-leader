@@ -13,6 +13,7 @@ import {
 export interface CtorOptions {
   channel: Channel;
   leaderInit: Leader;
+  totalitarian: boolean;
 }
 
 export interface Events {
@@ -36,10 +37,16 @@ export default class Bully {
 
   readonly events = createNanoEvents<Events>();
 
-  constructor(id: ID, { leaderInit, channel }: Partial<CtorOptions> = {}) {
+  readonly totalitarian: boolean;
+
+  constructor(
+    id: ID,
+    { leaderInit, channel, totalitarian = true }: Partial<CtorOptions> = {},
+  ) {
     this.id = id;
     this.chan = channel || multicast(this.id);
     this.leader = leaderInit || Election;
+    this.totalitarian = Boolean(totalitarian);
   }
 
   leader: Leader;
@@ -72,9 +79,19 @@ export default class Bully {
       this.assignLeader(snd); // we've elected the leader
     }
 
-    if (evt === Event.Election && snd < this.id) {
-      this.shout(Event.Disagree, snd); // no, you're not!
-      if (!this.isElecting()) this.elect(); // i want to be a leader too
+    if (evt === Event.Election) {
+      const hasAdvantage = snd < this.id;
+
+      // should it continue to maintain power if it was already a leader?
+      // "totalitarian" nodes don't give up their power even if the vote is against them
+      const maintainPower = hasAdvantage || this.totalitarian;
+
+      if (this.isLeader() && maintainPower) {
+        this.lead(); // i'm still the leader!
+      } else if (hasAdvantage) {
+        this.shout(Event.Disagree, snd); // no, you're not!
+        if (!this.isElecting()) this.elect(); // i want to be a leader too
+      }
     }
 
     if (evt === Event.Disagree) {

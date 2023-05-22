@@ -25,6 +25,7 @@ const useInstanceManager = () => useContext(ManagerCtx);
 
 interface Options {
   id?: ID;
+  totaliatiran?: boolean;
 }
 
 /**
@@ -46,7 +47,9 @@ export const useElection = (options?: Options): Bully => {
       manager[lookup].refs.add(hookRef.current);
     } else {
       // set up and run a new instance
-      const instance = new Bully(options?.id || nanoid(8));
+      const instance = new Bully(options?.id || nanoid(8), {
+        totalitarian: options?.totaliatiran,
+      });
       manager[lookup] = { instance, refs: new Set([hookRef.current]) };
 
       instance.live();
